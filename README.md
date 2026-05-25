@@ -1,50 +1,54 @@
-**Create a Dockerfile with**
+**Open Docker**
 
-\# pull official base image
 
-\# need to update to a newer version to fix a build bug
 
+**First create a directory where the React files should go**
+
+**Open up the command prompt and go to the directory just created**
+
+
+
+
+
+**Use the following to create the create react app files in the directory location currently within**
+
+npx create-react-app peters_seth_site
+
+
+
+**Edit src/App.js**
+
+Add <h1>Codin 1</h1>
+
+
+
+**Create a Dockerfile with the following in the new peters_seth_site directory**
+
+# pull official base image
+# need to update to a newer version to fix a build bug
 FROM node:18-alpine
 
+# set working directory
+# working directory of lastname_firstname_site as requested
+WORKDIR /peters_seth_site
 
-
-\# set working directory
-
-\# working directory of lastname\_firstname\_site as requested
-
-WORKDIR /peters\_seth\_site
-
-
-
-\# install app dependencies
-
+# install app dependencies
 COPY package.json ./
-
 RUN npm install
 
+# add app. Copy from here to container
+COPY . /peters_seth_site
+
+# claim or expose port 3000
+EXPOSE 3000
+
+# start app
+CMD ["npm", "start"]
 
 
-\# add app. Copy from here to container
+**Create a .dockerignore file with the following: (This will reduce the time to build the image)**
 
-COPY . ./
-
-
-
-\# claim port 7775
-
-EXPOSE 7775
-
-
-
-\# start app
-
-CMD \["npm", "start"]
-
-
-
-**Create a .dockerignore file with**
-
-node\_modules
+node_modules
 
 build
 
@@ -58,13 +62,15 @@ Dockerfile.prod
 
 
 
-**Use to build the create react app. -t means tag and what comes after it is the name. The period grabs the files in the current directory**
+**Use to build the create react app from the peters_seth_site directory.** 
 
-docker build -t peters\_seth\_coding\_assignment11 .
+**-t means tag and what comes after it is the name. The period grabs the files in the current directory**
+
+docker build -t peters_seth_coding_assignment11 .
 
 **Use this to run the container**
 
-docker run -it --rm -p 7775:3000 --name peters\_seth\_coding\_assignment11 peters\_seth\_coding\_assignment11
+docker run -it --rm -p 7775:3000 --name peters_seth_coding_assignment11 peters_seth_coding_assignment11
 
 
 
@@ -72,9 +78,9 @@ docker run -it --rm -p 7775:3000 --name peters\_seth\_coding\_assignment11 peter
 
 **--rm** removes the container when it is stopped. I kept it because I didn't want to keep deleting containers to test
 
-**-p** port forwards. It ports to the local of 7775 and grabs from 3000 (It kept saying to look at port 3000 so I think that's what that means)
+**-p** port forwards. It ports to the local of 7775 and grabs from 3000 (3000 being that the container is asking to grab from (listening from))
 
-**--name** names the container 
+**--name** names the container
 
 and then the last one is the image it runs from
 
