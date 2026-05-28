@@ -1,70 +1,96 @@
-# Getting Started with Create React App
+**Open Docker**
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Available Scripts
 
-In the project directory, you can run:
+**First create a directory where the React files should go**
 
-### `npm start`
+**Open up the command prompt and go to the directory just created**
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
 
-### `npm test`
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-### `npm run build`
+**Use the following to create the create react app files in the directory location currently within**
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+npx create-react-app peters_seth_site
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+**Update yaml**
+npm install yaml@2.9.0
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+**Edit src/App.js**
 
-### `npm run eject`
+Add <h1>Codin 1</h1>
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+**Create a Dockerfile with the following in the new peters_seth_site directory**
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+#build environment
+#Base Image as 18 to avoid errors
+FROM node:18-alpine as build
+#WORKDIR to what was it was asked to be
+WORKDIR /peters_seth_site
+#signify where to put the node modules when installing them
+ENV PATH /peters_seth_site/node_modules/.bin:$PATH
+#install app dependencies
+COPY package.json ./
+COPY package-lock.json ./
+RUN npm install react-scripts@3.4.1 -g
+RUN npm ci
+#add app. Copy from here to container
+COPY . ./
+#Build the project environment
+RUN npm run build
 
-## Learn More
+#production environment
+#Set Base image for production environment
+FROM nginx:stable-alpine
+#Copy from the build environment -- The path to the build -- the path to where nginx docker image looks to grab files from to serve
+#to the browser
+COPY --from=build /peters_seth_site/build /usr/share/nginx/html
+#Claim the port 80 to be listened to
+EXPOSE 80
+#Use nginx -- use the instructions taken from the command line -- tell nginx to stay in foreground and not background itself
+#basically it will run the container which uses and image built from this dockerfile. When we run the container it makes a build
+#that we grab the website files from then we send it to where it needs to befor nginx to find it so it can be grabbed
+CMD ["nginx", "-g", "daemon off;"]
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+**Create a .dockerignore file with the following: (This will reduce the time to build the image)**
 
-### Code Splitting
+node_modules
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+build
 
-### Analyzing the Bundle Size
+.dockerignore
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+Dockerfile
 
-### Making a Progressive Web App
+Dockerfile.prod
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
 
-### Advanced Configuration
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
 
-### Deployment
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+**Use to build the create react app from the peters_seth_site directory.**
 
-### `npm run build` fails to minify
+**-t means tag and what comes after it is the name. The period grabs the files in the current directory**
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+docker build -t peters_seth_coding_assignment11 .
+
+**Use this to run the container**
+
+docker run -it --rm -p 7775:80 --name peters_seth_coding_assignment11 peters_seth_coding_assignment11
+
+
+
+**-it** is interactive mode and the website said it is required
+
+**--rm** removes the container when it is stopped. I kept it because I didn't want to keep deleting containers to test
+
+**-p** port forwards. It ports to the local of 7775 and grabs from 3000 (3000 being that the container is asking to grab from (listening from))
+
+**--name** names the container
+
+and then the last one is the image it runs from
+
