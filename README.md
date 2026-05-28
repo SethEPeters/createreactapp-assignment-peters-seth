@@ -14,6 +14,7 @@
 
 npx create-react-app peters_seth_site
 
+<<<<<<< HEAD
 **Update yaml**
 npm install yaml@2.9.0
 
@@ -94,3 +95,75 @@ docker run -it --rm -p 7775:80 --name peters_seth_coding_assignment11 peters_set
 
 and then the last one is the image it runs from
 
+=======
+
+
+**Edit src/App.js**
+
+Add <h1>Codin 1</h1>
+
+
+
+**Create a Dockerfile with the following in the new peters_seth_site directory**
+
+# pull official base image
+# need to update to a newer version to fix a build bug
+FROM node:18-alpine
+
+# set working directory
+# working directory of lastname_firstname_site as requested
+WORKDIR /peters_seth_site
+
+# install app dependencies
+COPY package.json ./
+RUN npm install
+
+# add app. Copy from here to container
+COPY . /peters_seth_site
+
+# claim or expose port 3000
+EXPOSE 3000
+
+# start app
+CMD ["npm", "start"]
+
+
+**Create a .dockerignore file with the following: (This will reduce the time to build the image)**
+
+node_modules
+
+build
+
+.dockerignore
+
+Dockerfile
+
+Dockerfile.prod
+
+
+
+
+
+**Use to build the create react app from the peters_seth_site directory.**
+
+**-t means tag and what comes after it is the name. The period grabs the files in the current directory**
+
+docker build -t peters_seth_coding_assignment11 .
+
+**Use this to run the container**
+
+docker run -it --rm -p 7775:3000 --name peters_seth_coding_assignment11 peters_seth_coding_assignment11
+
+
+
+**-it** is interactive mode and the website said it is required
+
+**--rm** removes the container when it is stopped. I kept it because I didn't want to keep deleting containers to test
+
+**-p** port forwards. It ports to the local of 7775 and grabs from 3000 (3000 being that the container is asking to grab from (listening from))
+
+**--name** names the container
+
+and then the last one is the image it runs from
+
+>>>>>>> e8fd79e3e0b2143093948d10684fcc604d1393ea
